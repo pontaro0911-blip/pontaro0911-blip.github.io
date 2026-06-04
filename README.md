@@ -1,0 +1,2 @@
+# yukiponta.github.io
+せどりのやつ
