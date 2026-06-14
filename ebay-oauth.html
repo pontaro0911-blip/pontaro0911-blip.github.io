@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>eBay 認証コード / Authorization Code</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+         max-width: 720px; margin: 40px auto; padding: 0 16px; line-height: 1.6; }
+  h1 { font-size: 1.3rem; }
+  .box { border: 1px solid #8884; border-radius: 10px; padding: 16px; margin: 18px 0; }
+  textarea { width: 100%; box-sizing: border-box; font-family: ui-monospace, monospace;
+             font-size: 0.95rem; padding: 10px; border-radius: 8px; border: 1px solid #8886; }
+  button { font-size: 1rem; padding: 10px 18px; border-radius: 8px; border: 0;
+           background: #2d6cdf; color: #fff; cursor: pointer; }
+  button:active { transform: translateY(1px); }
+  .ok { color: #1a8a4a; font-weight: 600; }
+  .warn { color: #b00; }
+  code { background: #8881; padding: 2px 6px; border-radius: 4px; }
+  small { opacity: .75; }
+</style>
+</head>
+<body>
+  <h1>eBay 認証コード（Authorization Code）</h1>
+  <p id="status">URLを読み取っています…</p>
+
+  <div class="box" id="codebox" style="display:none">
+    <p><strong>下のコードをコピーして、ターミナルで実行してください：</strong></p>
+    <p><code>python main.py ebay-auth "&lt;ここに貼り付け&gt;"</code></p>
+    <textarea id="code" rows="4" readonly onclick="this.select()"></textarea>
+    <p>
+      <button onclick="copyText('code')">コードをコピー</button>
+      <span id="copied" class="ok" style="display:none">コピーしました ✓</span>
+    </p>
+    <p><small>フルURLでも貼り付け可（コマンド側で <code>code=</code> を自動抽出します）。
+       コードは数分で失効するため、すぐ実行してください。</small></p>
+  </div>
+
+  <div class="box" id="nocode" style="display:none">
+    <p class="warn">このページに認証コードがありません。</p>
+    <p>eBayの同意画面から許可した直後にこのページへ戻ると、URLに
+       <code>?code=...</code> が付き、ここにコードが表示されます。</p>
+  </div>
+
+  <p><small>このページは個人運用のeBay APIツールの認証受け取り用です。
+     eBayユーザーの個人データは保存しません（<a href="privacy.html">プライバシーポリシー</a>）。</small></p>
+
+<script>
+  function copyText(id) {
+    const el = document.getElementById(id);
+    el.select();
+    navigator.clipboard.writeText(el.value).then(() => {
+      document.getElementById('copied').style.display = 'inline';
+    }).catch(() => { document.execCommand('copy'); });
+  }
+  (function () {
+    const params = new URLSearchParams(location.search);
+    const code = params.get('code');
+    const status = document.getElementById('status');
+    if (code) {
+      // フルURLとcode単体の両方を貼れるよう、ここではcode単体を表示
+      document.getElementById('code').value = code;
+      document.getElementById('codebox').style.display = 'block';
+      status.innerHTML = '<span class="ok">認証コードを取得しました。</span>';
+    } else {
+      document.getElementById('nocode').style.display = 'block';
+      status.textContent = '';
+    }
+  })();
+</script>
+</body>
+</html>
